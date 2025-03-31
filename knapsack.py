@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import math  # For log2
 
 
 def load_knapsack_instance(filename):
@@ -38,14 +39,16 @@ def initialize_population(pop_size, items, capacity):
     return population
 
 
-def tournament_selection(population, fitnesses, tournament_size=3):
+def tournament_selection(population, fitnesses, tournament_size=4):
     selected = random.sample(list(zip(population, fitnesses)), tournament_size)
     return max(selected, key=lambda x: x[1])[0]
+
 
 def crossover(p1, p2):
     child1 = [p1[i] if random.random() < 0.5 else p2[i] for i in range(len(p1))]
     child2 = [p2[i] if random.random() < 0.5 else p1[i] for i in range(len(p1))]
     return child1, child2
+
 
 def mutate(individual, mutation_rate):
     return [bit if random.random() > mutation_rate else 1 - bit for bit in individual]
@@ -54,7 +57,7 @@ def mutate(individual, mutation_rate):
 def evolutionary_algorithm(filename, generations=200, pop_size=100, crossover_rate=0.8, mutation_rate=None):
     n, capacity, items = load_knapsack_instance(filename)
     if mutation_rate is None:
-        mutation_rate = 1 / n 
+        mutation_rate = 1 / n
 
     population = initialize_population(pop_size, items, capacity)
     fitness_history = []
@@ -91,7 +94,6 @@ def evolutionary_algorithm(filename, generations=200, pop_size=100, crossover_ra
     best_individual = population[best_idx]
     total_weight = sum(weight for bit, (value, weight) in zip(best_individual, items) if bit)
 
-
     print("\nBest solution found:")
     print("Total value:", final_fitnesses[best_idx])
     print("Total weight:", total_weight)
@@ -105,6 +107,10 @@ def evolutionary_algorithm(filename, generations=200, pop_size=100, crossover_ra
 
     return final_fitnesses[best_idx], best_individual
 
+
 if __name__ == "__main__":
-    filename = "input_1000.txt" 
-    evolutionary_algorithm(filename, generations=250, pop_size=500)
+    filename = "input_1000.txt"
+    n, _, _ = load_knapsack_instance(filename)
+    generations = int(30 * math.log2(n))
+
+    evolutionary_algorithm(filename, generations=generations, pop_size=500)
