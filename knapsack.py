@@ -42,10 +42,9 @@ def tournament_selection(population, fitnesses, tournament_size=3):
     selected = random.sample(list(zip(population, fitnesses)), tournament_size)
     return max(selected, key=lambda x: x[1])[0]
 
-def crossover(parent1, parent2):
-    point = random.randint(1, len(parent1) - 1)
-    child1 = parent1[:point] + parent2[point:]
-    child2 = parent2[:point] + parent1[point:]
+def crossover(p1, p2):
+    child1 = [p1[i] if random.random() < 0.5 else p2[i] for i in range(len(p1))]
+    child2 = [p2[i] if random.random() < 0.5 else p1[i] for i in range(len(p1))]
     return child1, child2
 
 def mutate(individual, mutation_rate):
